@@ -13,10 +13,10 @@ When you're done, please either:
 
 Using the provided solution, create the following
 
-- A page to list and search for products
-- A responsive UI
-- A way to view which products come from what category
-- Any validation, error handling, or business rules you think make sense for this kind of data
+[x] - A page to list and search for products
+[x] - A responsive UI
+[x] - A way to view which products come from what category
+[o] - Any validation, error handling, or business rules you think make sense for this kind of data
 
 For the UI, pick whatever you're comfortable with — vanilla JS or a framework.
 

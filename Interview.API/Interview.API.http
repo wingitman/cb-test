@@ -1,6 +1,6 @@
-@Interview.API_HostAddress = http://localhost:5110
+@Interview.API_HostAddress = https://localhost:7072
 
-GET {{Interview.API_HostAddress}}/weatherforecast/
+GET {{Interview.API_HostAddress}}/product/
 Accept: application/json
 
 ###

@@ -1,28 +1,301 @@
 @import 'tailwindcss';
 
-body {
-  margin: 0;
-  color: #fff;
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  background-image: linear-gradient(to bottom, #020917, #101725);
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.content {
-  display: flex;
-  min-height: 100vh;
-  line-height: 1.1;
-  text-align: center;
-  flex-direction: column;
-  justify-content: center;
+@layer base {
+  :root {
+    font-synthesis: none;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 min-w-[320px] bg-slate-100 font-sans text-slate-800 antialiased;
+  }
+
+  button,
+  input,
+  select {
+    @apply font-sans;
+  }
 }
 
-.content h1 {
-  font-size: 3.6rem;
-  font-weight: 700;
-}
+@layer components {
+  .page-shell {
+    @apply mx-auto min-h-screen w-full max-w-[1440px] px-4 py-6 sm:px-8 sm:py-10 lg:px-12;
+  }
 
-.content p {
-  font-size: 1.2rem;
-  font-weight: 400;
-  opacity: 0.5;
+  .page-header {
+    @apply mb-8 flex flex-col gap-5 border-b border-slate-200 pb-8 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .page-header::after {
+    content: 'LIVE INVENTORY';
+    @apply hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold tracking-[0.16em] text-emerald-700 sm:block;
+  }
+
+  .eyebrow {
+    @apply mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700;
+  }
+
+  h1 {
+    @apply m-0 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl;
+  }
+
+  h2 {
+    @apply m-0 text-lg font-semibold tracking-tight text-slate-900;
+  }
+
+  h3 {
+    @apply m-0 text-sm font-semibold text-slate-900;
+  }
+
+  .intro {
+    @apply m-0 max-w-2xl text-sm leading-6 text-slate-500;
+  }
+
+  .catalogue-card {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm mb-5;
+  }
+
+  .locations-card {
+    @apply mt-6;
+  }
+
+  .toolbar,
+  .section-heading {
+    @apply flex flex-col gap-5 border-b border-slate-200 bg-white p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6;
+  }
+
+  .section-heading {
+    @apply items-start sm:items-center;
+  }
+
+  .section-heading .eyebrow,
+  .detail-kicker {
+    @apply mb-1;
+  }
+
+  .result-count {
+    @apply m-0 mt-1 text-xs font-medium text-slate-400;
+  }
+
+  .filters {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-end;
+  }
+
+  .filters label,
+  .editor-form label,
+  .location-form label {
+    @apply grid gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .search-field input {
+    @apply w-full sm:w-64;
+  }
+
+  .filters input,
+  .filters select,
+  .editor-form input,
+  .editor-form select,
+  .location-form input {
+    @apply min-h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-normal tracking-normal text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100;
+  }
+
+  .table-wrap {
+    @apply w-full overflow-x-auto;
+  }
+
+  table {
+    @apply w-full min-w-[980px] border-collapse text-left;
+  }
+
+  th,
+  td {
+    @apply border-b border-slate-100 px-5 py-4 align-middle whitespace-nowrap;
+  }
+
+  thead th {
+    @apply bg-slate-50 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500;
+  }
+
+  tbody th {
+    @apply text-sm font-semibold text-slate-800;
+  }
+
+  tbody td {
+    @apply text-sm text-slate-500;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .product-row {
+    @apply transition-colors hover:bg-slate-50;
+  }
+
+  .product-row.expanded th,
+  .product-row.expanded td {
+    @apply border-emerald-100 bg-emerald-50/40;
+  }
+
+  .product-toggle {
+    @apply inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-left text-sm font-semibold text-slate-800 transition hover:text-emerald-700;
+  }
+
+  .toggle-icon {
+    @apply grid h-5 w-5 place-items-center rounded-full border border-emerald-200 bg-white text-sm font-medium leading-none text-emerald-700;
+  }
+
+  .status-pill {
+    @apply inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700;
+  }
+
+  .margin-positive {
+    @apply font-semibold text-emerald-700;
+  }
+
+  .margin-negative,
+  .capacity-warning {
+    @apply font-semibold text-rose-600;
+  }
+
+  .detail-row td {
+    @apply whitespace-normal bg-slate-50/80 p-0;
+  }
+
+  .product-details {
+    @apply min-w-0 max-w-full overflow-hidden px-5 pb-6 sm:px-8;
+  }
+
+  .detail-heading {
+    @apply -mx-5 mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-5 py-5 sm:-mx-8 sm:px-8;
+  }
+
+  .detail-heading > * {
+    @apply min-w-0;
+  }
+
+  .detail-kicker {
+    @apply text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700;
+  }
+
+  .inventory-list {
+    @apply grid gap-3;
+  }
+
+  .inventory-item {
+    @apply grid min-w-0 grid-cols-1 items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto_auto_auto];
+  }
+
+  .inventory-item > * {
+    @apply min-w-0;
+  }
+
+  .inventory-item strong,
+  .inventory-item span {
+    @apply block;
+  }
+
+  .inventory-item > div:first-child span {
+    @apply mt-1 text-xs text-slate-400;
+  }
+
+  .inventory-metric span {
+    @apply mb-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400;
+  }
+
+  .inventory-metric strong {
+    @apply text-sm text-slate-800;
+  }
+
+  .active {
+    background: var(--color-emerald-100);
+    width: 6em;
+	  justify-content: center;
+  }
+  .inactive {
+    background: rgba(250, 208, 216, 1);
+    color: rgba(122, 0, 0, 1);
+    width: 6em;
+	  justify-content: center;
+
+  }
+
+  .inline-actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .empty-detail {
+    @apply m-0 rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500;
+  }
+
+  .editor-form,
+  .location-form {
+    @apply flex flex-wrap items-end gap-3 rounded-xl border border-dashed border-emerald-200 bg-emerald-50/40 p-4;
+  }
+
+  .editor-form {
+    @apply col-span-full;
+  }
+
+  .editor-actions {
+    @apply flex gap-2;
+  }
+
+  .primary-button,
+  .secondary-button {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center rounded-lg px-3.5 text-xs font-bold transition focus:outline-none focus:ring-4;
+  }
+
+  .primary-button {
+    @apply bg-slate-900 text-white shadow-sm hover:bg-emerald-700 focus:ring-slate-200;
+  }
+
+  .secondary-button {
+    @apply border border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:text-emerald-700 focus:ring-emerald-100;
+  }
+
+  .text-button,
+  .danger-button {
+    @apply cursor-pointer border-0 bg-transparent p-0 text-xs font-bold transition;
+  }
+
+  .text-button {
+    @apply text-emerald-700 hover:text-emerald-900;
+  }
+
+  .danger-button {
+    @apply text-rose-600 hover:text-rose-800;
+  }
+
+  .state-message {
+    @apply grid gap-1.5 p-12 text-center text-sm text-slate-500;
+  }
+
+  .error-message {
+    @apply text-rose-600;
+  }
+
+  .error-message strong {
+    @apply text-rose-700;
+  }
+
+  .action-error {
+    @apply mb-5 flex items-center justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700;
+  }
+
+  .action-error button {
+    @apply cursor-pointer border-0 bg-transparent text-xl leading-none text-rose-700;
+  }
+
+  .editor-row td {
+    @apply whitespace-normal bg-slate-50 p-3 sm:px-5;
+  }
 }

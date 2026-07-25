@@ -10,6 +10,7 @@ public class InMemDbContext : DbContext
     }
 
     public DbSet<Product> Products => Set<Product>();
-
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Location> Locations => Set<Location>();
+    public DbSet<Inventory> Inventory => Set<Inventory>();
 }
