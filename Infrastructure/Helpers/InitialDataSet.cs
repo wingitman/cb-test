@@ -27,8 +27,22 @@ public static class InitialDataSet
         new Product { Id = Guid.NewGuid(), Name = "Samsung 990 Pro 2TB SSD", Sku = "SSD-2TB-990PRO", IsActive = true, CategoryId = Guid.Parse("55555555-5555-5555-5555-555555555555") },
         new Product { Id = Guid.NewGuid(), Name = "WD Black SN850X 1TB SSD", Sku = "SSD-1TB-SN850X", IsActive = true, CategoryId = Guid.Parse("55555555-5555-5555-5555-555555555555") },
 
-        new Product { Id = Guid.NewGuid(), Name = "Logitech MX Master 3 Mouse", Sku = "PER-MX3-LOGI", IsActive = true, CategoryId = null },
-        new Product { Id = Guid.NewGuid(), Name = "Razer Huntsman Keyboard", Sku = "PER-HUNT-RAZER", IsActive = false, CategoryId = null },
-        new Product { Id = Guid.NewGuid(), Name = "Dell UltraSharp 27 Monitor", Sku = "MON-27-UDEL", IsActive = true, CategoryId = null }
+        new Product { Id = Guid.NewGuid(), Name = "Logitech MX Master 3 Mouse", Sku = "PER-MX3-LOGI", IsActive = true, CategoryId = Guid.Parse("66666666-6666-6666-6666-666666666666") },
+        new Product { Id = Guid.NewGuid(), Name = "Razer Huntsman Keyboard", Sku = "PER-HUNT-RAZER", IsActive = false, CategoryId = Guid.Parse("77777777-7777-7777-7777-777777777777") },
+        new Product { Id = Guid.NewGuid(), Name = "Dell UltraSharp 27 Monitor", Sku = "MON-27-UDEL", IsActive = true, CategoryId = Guid.Parse("88888888-8888-8888-8888-888888888888") }
+    ];
+
+    // TODO: Make Categories dataset
+
+    public static IEnumerable<Category> GetCategories() =>
+     [
+      new Category { Name = "GPU", IsActive = true, CategoryId = Guid.Parse("11111111-1111-1111-1111-111111111111") },
+      new Category { Name = "CPU", IsActive = true, CategoryId = Guid.Parse("22222222-2222-2222-2222-222222222222") },
+      new Category { Name = "Motherboard", IsActive = true, CategoryId = Guid.Parse("33333333-3333-3333-3333-333333333333") },
+      new Category { Name = "RAM", IsActive = true, CategoryId = Guid.Parse("44444444-4444-4444-4444-444444444444") },
+      new Category { Name = "Storage", IsActive = true, CategoryId = Guid.Parse("55555555-5555-5555-5555-555555555555") },
+      new Category { Name = "Mouse", IsActive = true, CategoryId = Guid.Parse("66666666-6666-6666-6666-666666666666") },
+      new Category { Name = "Keyboard", IsActive = true, CategoryId = Guid.Parse("77777777-7777-7777-7777-777777777777") },
+      new Category { Name = "Monitor", IsActive = true, CategoryId = Guid.Parse("88888888-8888-8888-8888-888888888888") },
     ];
 }
