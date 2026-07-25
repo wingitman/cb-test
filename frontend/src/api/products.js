@@ -29,6 +29,18 @@ export function getLocations(signal) {
   return apiRequest('/locations', { signal });
 }
 
+export function getCategories(signal) {
+  return apiRequest('/categories', { signal });
+}
+
+export function updateProduct(productId, product) {
+  return apiRequest(`/products/${productId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(product),
+  });
+}
+
 export function addInventory(productId, inventory) {
   return apiRequest(`/products/${productId}/inventory`, {
     method: 'POST',

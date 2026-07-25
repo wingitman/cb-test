@@ -4,11 +4,13 @@ import {
   addLocation,
   deleteInventory,
   deleteLocation,
+  getCategories,
   getLocations,
   getProducts,
   toggleProductActive,
   updateInventory,
   updateLocation,
+  updateProduct,
 } from './api/products';
 import './App.css';
 
@@ -123,14 +125,122 @@ function LocationForm({ location, onCancel, onSubmit }) {
   );
 }
 
+function ProductForm({ product, categories, onCancel, onSubmit }) {
+  const [form, setForm] = useState({
+    name: product.name,
+    sku: product.sku,
+    categoryId: product.category?.id || '',
+    isActive: product.isActive,
+    price: product.price,
+    margin: product.margin,
+  });
+
+  const update = (name, value) => setForm((current) => ({ ...current, [name]: value }));
+
+  return (
+    <form
+      className="product-form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit({
+          ...form,
+          price: Number(form.price),
+          margin: Number(form.margin),
+          categoryId: form.categoryId || null,
+        });
+      }}
+    >
+      <div className="product-form-header">
+        <div>
+          <p className="detail-kicker">Product details</p>
+          <h3>Edit product</h3>
+        </div>
+        <span className="product-form-note">Changes are saved to the catalogue</span>
+      </div>
+      <div className="product-form-fields">
+        <label>
+          Name
+          <input value={form.name} onChange={(event) => update('name', event.target.value)} required />
+        </label>
+        <label>
+          SKU
+          <input value={form.sku} onChange={(event) => update('sku', event.target.value)} required />
+        </label>
+        <label>
+          Category
+          <select value={form.categoryId} onChange={(event) => update('categoryId', event.target.value)} required>
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Base price
+          <span className="currency-input">
+            <span aria-hidden="true">£</span>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.price}
+              onChange={(event) => update('price', event.target.value)}
+              required
+            />
+          </span>
+        </label>
+        <label>
+          Margin
+          <span className="currency-input">
+            <span aria-hidden="true">£</span>
+            <input
+              type="number"
+              step="0.01"
+              value={form.margin}
+              onChange={(event) => update('margin', event.target.value)}
+              required
+            />
+          </span>
+        </label>
+        <label className="checkbox-field">
+          <span>Catalogue status</span>
+          <span className="checkbox-control">
+            <input
+              type="checkbox"
+              checked={form.isActive}
+              onChange={(event) => update('isActive', event.target.checked)}
+            />
+            Active
+          </span>
+        </label>
+      </div>
+      <div className="editor-actions">
+        <button type="submit" className="primary-button">
+          Save product
+        </button>
+        <button type="button" className="secondary-button" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 const App = () => {
   const [filters, setFilters] = useState(initialFilters);
   const [products, setProducts] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState('');
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [inventoryEditor, setInventoryEditor] = useState(null);
+  const [productEditorId, setProductEditorId] = useState(null);
+  const [togglingProductId, setTogglingProductId] = useState(null);
   const [locationEditor, setLocationEditor] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [actionError, setActionError] = useState('');
@@ -165,6 +275,20 @@ const App = () => {
       .then((result) => {
         setLocations(
           Array.isArray(result) ? result.filter((location) => location && typeof location.capacity === 'number') : [],
+        );
+      })
+      .catch((requestError) => {
+        if (requestError.name !== 'AbortError') setActionError(requestError.message);
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new globalThis.AbortController();
+    getCategories(controller.signal)
+      .then((result) => {
+        setCategoryOptions(
+          Array.isArray(result) ? result.filter((category) => category && category.id && category.name) : [],
         );
       })
       .catch((requestError) => {
@@ -211,6 +335,29 @@ const App = () => {
       setLocationEditor(null);
       setShowLocationForm(false);
     });
+
+  const saveProduct = (productId, product) =>
+    runAction(async () => {
+      await updateProduct(productId, product);
+      setProductEditorId(null);
+    });
+
+  const handleToggleProduct = async (product) => {
+    setActionError('');
+    setTogglingProductId(product.id);
+    try {
+      const isActive = await toggleProductActive(product.id);
+      setProducts((currentProducts) =>
+        currentProducts.map((currentProduct) =>
+          currentProduct.id === product.id ? { ...currentProduct, isActive } : currentProduct,
+        ),
+      );
+    } catch (requestError) {
+      setActionError(requestError.message);
+    } finally {
+      setTogglingProductId(null);
+    }
+  };
 
   return (
     <main className="page-shell">
@@ -369,6 +516,7 @@ const App = () => {
                   <th scope="col">Used capacity</th>
                   <th scope="col">Price</th>
                   <th scope="col">Margin</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -396,9 +544,18 @@ const App = () => {
                         <td>{product.sku}</td>
                         <td>{product.category?.name || 'Uncategorised'}</td>
                         <td>
-                          <button className={product.isActive ? 'status-pill active' : 'status-pill inactive'}
-                            onClick={() => toggleProductActive(product.id)}>
-                            {product.isActive ? 'Active' : 'Inactive'}</button>
+                          <button
+                            type="button"
+                            className={product.isActive ? 'status-pill active status-toggle' : 'status-pill inactive status-toggle'}
+                            onClick={() => handleToggleProduct(product)}
+                            disabled={togglingProductId === product.id}
+                            title={`Set product ${product.isActive ? 'inactive' : 'active'}`}
+                          >
+                            <span>{product.isActive ? 'Active' : 'Inactive'}</span>
+                            <span className="status-hover-icon" aria-hidden="true">
+                              {togglingProductId === product.id ? '...' : '↻'}
+                            </span>
+                          </button>
                         </td>
                         <td>{inventory.length || 'Not set'}</td>
                         <td>{usedCapacity || 'Not set'}</td>
@@ -406,11 +563,31 @@ const App = () => {
                         <td className={margin >= 0 ? 'margin-positive' : 'margin-negative'}>
                           {price || margin ? `${margin >= 0 ? '+' : ''}${currency.format(margin)}` : 'Not set'}
                         </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="text-button"
+                            onClick={() => {
+                              setExpandedProductId(product.id);
+                              setProductEditorId(product.id);
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </td>
                       </tr>
                       {expanded && (
                         <tr className="detail-row">
-                          <td colSpan="8">
+                          <td colSpan="9">
                             <div className="product-details">
+                              {productEditorId === product.id && (
+                                <ProductForm
+                                  product={product}
+                                  categories={categoryOptions}
+                                  onCancel={() => setProductEditorId(null)}
+                                  onSubmit={(value) => saveProduct(product.id, value)}
+                                />
+                              )}
                               <div className="detail-heading">
                                 <div>
                                   <p className="detail-kicker">Stock placement</p>

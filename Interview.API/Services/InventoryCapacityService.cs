@@ -1,11 +1,16 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace Interview.API;
+namespace Interview.API.Services;
 
-public static class InventoryCapacity
+public static class InventoryCapacityService
 {
-    public static async Task<long> GetUsedAsync(
+    /// summary Calculate the used capacity at a given location. Optionally exclude inventory that is being updated
+    /// param name="db"
+    /// param name="locationId"
+    /// param name="excludedInventoryId"
+    /// param name="cancellationToken"
+    public static async Task<long> CalculateCapacityAsync(
         InMemDbContext db,
         Guid locationId,
         Guid? excludedInventoryId,
